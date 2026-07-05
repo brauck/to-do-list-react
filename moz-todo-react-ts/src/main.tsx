@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
-import { TodoProps } from "./components/Todo";
+import { type TodoProps} from "./components/Todo";
 
 const DATA: TodoProps[] = [
   { id: "todo-0", name: "Eat", completed: true},

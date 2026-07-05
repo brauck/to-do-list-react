@@ -4,8 +4,8 @@
 // import heroImg from './assets/hero.png'
 import { useState } from "react";
 import Form from "./components/Form";
-import FilterButton from "./components/FilterButton";
-import { TodoProps, Todo } from "./components/Todo";
+import { FilterButton, type FilterName, FILTER_MAP } from "./components/FilterButton";
+import { type TodoProps, Todo } from "./components/Todo";
 
 /*type AppProps = {
   subject: string
@@ -28,8 +28,25 @@ type AppProps = {
   tasks: TodoProps[]
 }
 
+// type filterMap = {
+//   All: () => boolean,
+//   Active: (task: TodoProps) => boolean,
+//   Completed: (task: TodoProps) => boolean,
+// };
+
+// const FILTER_MAP  = {
+//   All: () => true,
+//   Active: (task: TodoProps) => !task.completed,
+//   Completed: (task: TodoProps) => task.completed,
+// } as const;
+
+// type FilterName = keyof typeof FILTER_MAP;
+
+const FILTER_NAMES = Object.keys(FILTER_MAP) as FilterName[];
+
 function App(props: AppProps) {
   const [tasks, setTasks] = useState(props.tasks);
+  const [filter, setFilter] = useState<FilterName>("All");
 
   function addTask(name: string) {
     const newTask: TodoProps = { 
@@ -75,7 +92,9 @@ function App(props: AppProps) {
   }
 
   
-  const taskList = tasks?.map((task) => (
+  const taskList = tasks
+  .filter(FILTER_MAP[filter])
+  .map((task) => (
     <Todo
       id={task.id}
       name={task.name}
@@ -87,6 +106,15 @@ function App(props: AppProps) {
     />
   ));
 
+  const filterList = FILTER_NAMES.map((name) => (
+    <FilterButton
+    key={name}
+    name={name}
+    isPressed={name === filter}
+    setFilter={setFilter}
+  />
+  ));
+
   const tasksNoun = taskList.length !== 1 ? "tasks" : "task";
   const headingText = `${taskList.length} ${tasksNoun} remaining`;
   
@@ -94,11 +122,7 @@ function App(props: AppProps) {
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
       <Form addTask={addTask} />
-      <div className="filters btn-group stack-exception">
-        <FilterButton />
-        <FilterButton />
-        <FilterButton />
-      </div>
+      <div className="filters btn-group stack-exception">{filterList}</div>
       <h2 id="list-heading">{headingText}</h2>
       <ul
         role="list"
