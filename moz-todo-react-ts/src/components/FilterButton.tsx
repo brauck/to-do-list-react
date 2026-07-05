@@ -4,7 +4,7 @@ export const FILTER_MAP  = {
   All: () => true,
   Active: (task: TodoProps) => !task.completed,
   Completed: (task: TodoProps) => task.completed,
-};
+} as const;
 
 export type FilterName = keyof typeof FILTER_MAP;
 

@@ -2,10 +2,11 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from './assets/vite.svg'
 // import heroImg from './assets/hero.png'
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Form from "./components/Form";
 import { FilterButton, type FilterName, FILTER_MAP } from "./components/FilterButton";
 import { type TodoProps, Todo } from "./components/Todo";
+import { usePrevious } from "./hooks/usePrevious";
 
 /*type AppProps = {
   subject: string
@@ -117,13 +118,24 @@ function App(props: AppProps) {
 
   const tasksNoun = taskList.length !== 1 ? "tasks" : "task";
   const headingText = `${taskList.length} ${tasksNoun} remaining`;
+
+  const listHeadingRef = useRef<HTMLHeadingElement>(null);
+  const prevTaskLength = usePrevious(tasks.length);
+
+  useEffect(() => {
+    if (prevTaskLength !== undefined && tasks.length < prevTaskLength) {
+      listHeadingRef.current?.focus();
+    }
+  }, [tasks.length, prevTaskLength]);
   
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
       <Form addTask={addTask} />
       <div className="filters btn-group stack-exception">{filterList}</div>
-      <h2 id="list-heading">{headingText}</h2>
+      <h2 id="list-heading" tabIndex={-1} ref={listHeadingRef}>
+        {headingText}
+      </h2>
       <ul
         role="list"
         className="todo-list stack-large stack-exception"
